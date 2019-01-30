@@ -32,19 +32,10 @@ namespace Backres
 
 		public void Inititalize()
 		{
-
+			dataGridMain.ItemsSource = BrConfig.Instance.Items;
 		}
 
-
-		private void menuItemCmBackup_Click(object sender, RoutedEventArgs e)
-		{
-		}
-
-		private void menuItemCmRestore_Click(object sender, RoutedEventArgs e)
-		{
-
-		}
-
+		#region 
 		public string GetUninstallCommandFor(string productDisplayName)
 		{
 			RegistryKey localMachine = Registry.LocalMachine;
@@ -70,9 +61,49 @@ namespace Backres
 
 		}
 
+		#endregion
+
+
+		public async Task Backup()
+		{
+			var name = ((BrItem)dataGridMain.SelectedItem).Name;
+			if (!String.IsNullOrWhiteSpace(name))
+				await BrConfig.Instance.Backup(name);
+		}
+
+		public async Task Restore()
+		{
+			var name = ((BrItem)dataGridMain.SelectedItem).Name;
+			if (!String.IsNullOrWhiteSpace(name))
+				await BrConfig.Instance.Restore(name);
+		}
+
+
+		private async void menuItemCmBackup_Click(object sender, RoutedEventArgs e)
+		{
+			await Backup();
+		}
+
+		private async void menuItemCmRestore_Click(object sender, RoutedEventArgs e)
+		{
+			await Restore();
+		}
+
+		private async void BntBackup_Click(object sender, RoutedEventArgs e)
+		{
+			await Backup();
+		}
+
+		private async void BntRestore_Click(object sender, RoutedEventArgs e)
+		{
+			await Restore();
+		}
+
 		private void ButtonTest_Click(object sender, RoutedEventArgs e)
 		{
 			var t = BrConfig.Instance;
 		}
+
+
 	}
 }

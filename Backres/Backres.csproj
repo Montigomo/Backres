@@ -74,7 +74,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ActionCopyFile.cs" />
+    <Compile Include="Models\ActionImportRegistry.cs" />
+    <Compile Include="Models\ActionExportRegistry.cs" />
     <Compile Include="Models\BrConfig.cs" />
+    <Compile Include="Models\BrRegistryHelper.cs" />
+    <Compile Include="Models\Extentions.cs" />
     <Compile Include="Native\ProcessWin32.cs" />
     <Compile Include="Native\Win32.cs" />
     <Compile Include="Native\WindowActivator.cs" />

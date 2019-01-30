@@ -15,7 +15,7 @@
 			<RowDefinition Height="64"/>
 		</Grid.RowDefinitions>
 		<DataGrid x:Name="dataGridMain" HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="0" >
+                  VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="0" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="#FFAAAAAA" >
 			<DataGrid.ContextMenu>
 				<ContextMenu>
 					<MenuItem x:Name="menuItemCmBackup" Header="Backup" Click="menuItemCmBackup_Click"/>
@@ -24,6 +24,16 @@
 			</DataGrid.ContextMenu>
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Provider" Binding="{Binding Name}" MinWidth="150" />
+				<DataGridTemplateColumn Header="Actions">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<Button x:Name="bntBackup" Click="BntBackup_Click" Margin="3,0">Backup</Button>
+								<Button x:Name="bntRestore" Margin="3,0" Click="BntRestore_Click" >Restore</Button>
+							</StackPanel>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 		</DataGrid>
 		<Grid Grid.Row="1">
@@ -31,8 +41,8 @@
 				<RowDefinition/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" TextWrapping="Wrap" />
-			<Button x:Name="buttonTest" Content="TEST" Margin="10,10,338,22" Grid.RowSpan="2" Click="ButtonTest_Click" />
+			<Button Grid.Row="0" x:Name="buttonTest" Content="TEST" Click="ButtonTest_Click" Height="21" Margin="10,6,379,5" />
+			<TextBlock Grid.Row="1" TextWrapping="Wrap" Background="#FFE6E6E6" />
 		</Grid>
 	</Grid>
 </Window>
