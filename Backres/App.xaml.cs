@@ -13,7 +13,7 @@ namespace Backres
 	public partial class App : Application
 	{
 		static public readonly string Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-		static public readonly string AppTitle = "Bareman  - " + Version;
+		static public readonly string AppTitle = "BACKup REStore app settings tool  - " + Version;
 
 		internal static MemoryMappedFile sharedMemory;
 
@@ -73,19 +73,10 @@ namespace Backres
 
 			}
 
-			//ConfigureContainer();
-
 			base.OnStartup(e);
 
 		}
-
-		//private void ConfigureContainer()
-		//{
-		//	Container = new StandardKernel();
-		//	Container.Bind<INewsAnt>().To<NantLentaRu>().InTransientScope();
-		//	Container.Bind<INewsAnalizer>().To<NewsAnalizer>();
-		//}
-
+		
 		private void Application_Exit(object sender, ExitEventArgs e)
 		{
 			if (sharedMemory != null)

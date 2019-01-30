@@ -118,6 +118,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>%25SystemRoot%25\sysnative\WindowsPowerShell\v1.0\powershell.exe -file "$(ProjectDir)post-build.ps1" "$(TargetPath)"</PostBuildEvent>
+    <PostBuildEvent>%25SystemRoot%25\sysnative\WindowsPowerShell\v1.0\powershell.exe -file "$(ProjectDir)post-build.ps1" "$(TargetPath)" "$(TargetDir)\Newtonsoft.Json.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
