@@ -8,35 +8,21 @@ using System.IO;
 namespace Backres.Models
 {
 
-	public class ActionExportRegistry : IAction
+	public class ActionExportRegistry : BaseAction, IAction
 	{
-		private ActionDirection ActionDirection { get; set; }
 
-		public ActionExportRegistry(BrAction bAction, ActionDirection bDirection)
+		public ActionExportRegistry(BrAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
 		{
-			if (bAction.Name != "ExportRegistry")
-				throw new Exception("Invalid argument for ActionCopy constructor");
 
-			DstFilePath = bAction.DstPath.NormilizePath();
-
-			RegistryKey = bAction.RegistryKey;
-
-			ActionDirection = bDirection;
 		}
 
-		public string DstFilePath { get; }
-
-		public string RegistryKey { get; set; }
+		protected override string ActionName { get; } = "ExportRegistry";
 
 
 		public bool Run()
 		{
-			if (File.Exists(DstFilePath))
-			{
-				//
-			}
-			(new FileInfo(DstFilePath)).Directory.Create();
-			BrRegistryHelper.ExportRegistry(RegistryKey, DstFilePath);
+			(new FileInfo(DstPath)).Directory.Create();
+			BrRegistryHelper.ExportRegistry(RegistryKey, DstPath);
 			return true;
 		}
 

@@ -7,27 +7,14 @@ using System.IO;
 
 namespace Backres.Models
 {
-	public class ActionCopyFolder : IAction
+	public class ActionCopyFolder : BaseAction, IAction
 	{
 
-		public ActionCopyFolder(BrAction bAction, ActionDirection bDirection)
+		public ActionCopyFolder(BrAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
 		{
-			if (bAction.Name != "CopyFolder")
-				throw new Exception("Invalid argument for ActionCopy constructor");
-
-			SrcPath = bAction.SrcPath.NormilizePath();
-			DstPath = bAction.DstPath.NormilizePath();
-			ActionDirection = bDirection;
-			Overwrite = bAction.Overwrite;
 		}
 
-		private bool Overwrite { get; }
-
-		private ActionDirection ActionDirection { get; }
-
-		public string SrcPath { get; }
-
-		public string DstPath { get; }
+		protected override string ActionName { get; } = "CopyFolder";
 
 		public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target, bool overwrite)
 		{

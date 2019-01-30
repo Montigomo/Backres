@@ -10,10 +10,21 @@ namespace Backres.Models
 {
 	public static class Extentions
 	{
-		public static string NormilizePath(this string value)
+		public static string NormilizePath(this string value, string itemName = null)
 		{
 			var localString = value;
-			foreach (KeyValuePair<string, string> kvp in BrConfig.PathKeys)
+			IDictionary<string, string> substitudeDictionary;
+			if (String.IsNullOrWhiteSpace(itemName))
+			{
+				substitudeDictionary = BrConfig.PathKeys;
+			}
+			else
+			{
+				substitudeDictionary = new Dictionary<string, string>(BrConfig.PathKeys);
+				substitudeDictionary.Add("Name", itemName);
+			}
+
+			foreach (KeyValuePair<string, string> kvp in substitudeDictionary)
 			{
 				localString = localString.Replace("{" + kvp.Key + "}", kvp.Value);
 			}

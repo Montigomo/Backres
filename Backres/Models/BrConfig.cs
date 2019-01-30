@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,16 +75,16 @@ namespace Backres.Models
 				var ActionItems = aDirection == ActionDirection.Backup ? Item.BackupActions.OrderBy(i => i.Order) : Item.RestoreActions.OrderBy(i => i.Order);
 				foreach (var action in ActionItems)
 				{
-					var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + action.Name);
+					var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + action.ActionName);
 
 					if (type == null)
 						continue;
-
+					action.ItemName = name;
 					IAction iaction = (IAction)Activator.CreateInstance(type, action, aDirection);
 
 					iaction.Run();
 				}
-				Thread.Sleep(1000);
+				Thread.Sleep(500);
 				tcs.SetResult(true);
 			}, TaskCreationOptions.LongRunning);
 			return tcs.Task;
@@ -105,7 +106,10 @@ namespace Backres.Models
 
 	public class BrAction
 	{
-		public string Name { get; set; }
+		public string ItemName { get; set; }
+
+		[JsonProperty(PropertyName = "Name")]
+		public string ActionName { get; set; }
 
 		public int Order { get; set; }
 
@@ -121,9 +125,42 @@ namespace Backres.Models
 
 	public interface IAction
 	{
+
 		bool Run();
 
 		Task<bool> RunAsync();
+
+	}
+
+
+	public abstract class BaseAction
+	{
+
+		public BaseAction(BrAction bAction, ActionDirection bDirection)
+		{
+			if (bAction.ActionName != ActionName)
+				throw new Exception("Invalid argument for ActionCopy constructor");
+			ItemName = bAction.ItemName;
+			Overwrite = bAction.Overwrite;
+			ActionDirection = bDirection;
+			SrcPath = bAction.SrcPath?.NormilizePath(ItemName);
+			DstPath = bAction.DstPath?.NormilizePath(ItemName);
+			RegistryKey = bAction.RegistryKey;
+		}
+
+		protected abstract string ActionName { get; }
+
+		protected ActionDirection ActionDirection { get; }
+
+		protected bool Overwrite { get; }
+
+		protected string ItemName { get; }
+
+		protected string SrcPath { get; }
+
+		protected string DstPath { get; }
+
+		protected string RegistryKey { get; }
 	}
 
 

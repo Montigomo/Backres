@@ -7,33 +7,21 @@ using System.IO;
 
 namespace Backres.Models
 {
-	public class ActionCopyFile : IAction
+	public class ActionCopyFile : BaseAction, IAction
 	{
 
-		public ActionCopyFile(BrAction bAction, ActionDirection bDirection)
+		public ActionCopyFile(BrAction bAction, ActionDirection bDirection): base(bAction, bDirection)
 		{
-			if (bAction.Name != "CopyFile")
-				throw new Exception("Invalid argument for ActionCopy constructor");
-
-			SrcPath = bAction.SrcPath.NormilizePath();
-			DstPath = bAction.DstPath.NormilizePath();
-			Overwrite = bAction.Overwrite;
-			ActionDirection = bDirection;
 		}
-		private ActionDirection ActionDirection { get; set; }
 
-		private bool Overwrite { get; }
-
-		public string SrcPath { get; }
-
-		public string DstPath { get; }
+		protected override string ActionName { get; } = "CopyFile";
 
 		public bool Run()
 		{
 			if (File.Exists(SrcPath))
 			{
 				(new FileInfo(DstPath)).Directory.Create();
-				File.Copy(SrcPath, DstPath, true);
+				File.Copy(SrcPath, DstPath, Overwrite);
 			}
 			return true;
 		}
