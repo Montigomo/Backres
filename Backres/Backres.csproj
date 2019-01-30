@@ -74,6 +74,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ActionCopyFolder.cs" />
     <Compile Include="Models\ActionCopyFile.cs" />
     <Compile Include="Models\ActionImportRegistry.cs" />
     <Compile Include="Models\ActionExportRegistry.cs" />

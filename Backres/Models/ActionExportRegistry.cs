@@ -17,7 +17,7 @@ namespace Backres.Models
 			if (bAction.Name != "ExportRegistry")
 				throw new Exception("Invalid argument for ActionCopy constructor");
 
-			DstFilePath = bAction.DstFile.NormilizePath();
+			DstFilePath = bAction.DstPath.NormilizePath();
 
 			RegistryKey = bAction.RegistryKey;
 
@@ -28,18 +28,25 @@ namespace Backres.Models
 
 		public string RegistryKey { get; set; }
 
-		public Task<bool> Run()
+
+		public bool Run()
+		{
+			if (File.Exists(DstFilePath))
+			{
+				//
+			}
+			(new FileInfo(DstFilePath)).Directory.Create();
+			BrRegistryHelper.ExportRegistry(RegistryKey, DstFilePath);
+			return true;
+		}
+
+		public Task<bool> RunAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Task.Factory.StartNew(/*async*/ () =>
 			{
-				if (File.Exists(DstFilePath))
-				{
-					//
-				}
-				(new FileInfo(DstFilePath)).Directory.Create();
-				BrRegistryHelper.ExportRegistry(RegistryKey, DstFilePath);
-				tcs.SetResult(true);
+
+				tcs.SetResult(Run());
 			}, TaskCreationOptions.LongRunning);
 			return tcs.Task;
 		}

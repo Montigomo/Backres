@@ -15,7 +15,7 @@
 			<RowDefinition Height="64"/>
 		</Grid.RowDefinitions>
 		<DataGrid x:Name="dataGridMain" HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="0" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="#FFAAAAAA" >
+                  VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="0" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="#FFAAAAAA" Tag="toggle" >
 			<DataGrid.ContextMenu>
 				<ContextMenu>
 					<MenuItem x:Name="menuItemCmBackup" Header="Backup" Click="menuItemCmBackup_Click"/>

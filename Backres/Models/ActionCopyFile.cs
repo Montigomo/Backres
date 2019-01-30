@@ -9,34 +9,41 @@ namespace Backres.Models
 {
 	public class ActionCopyFile : IAction
 	{
-		private ActionDirection ActionDirection { get; set; }
 
 		public ActionCopyFile(BrAction bAction, ActionDirection bDirection)
 		{
 			if (bAction.Name != "CopyFile")
 				throw new Exception("Invalid argument for ActionCopy constructor");
 
-			SrcFilePath = bAction.SrcFile.NormilizePath();
-			DstFilePath = bAction.DstFile.NormilizePath();
-
+			SrcPath = bAction.SrcPath.NormilizePath();
+			DstPath = bAction.DstPath.NormilizePath();
+			Overwrite = bAction.Overwrite;
 			ActionDirection = bDirection;
 		}
+		private ActionDirection ActionDirection { get; set; }
 
-		public string SrcFilePath { get; }
+		private bool Overwrite { get; }
 
-		public string DstFilePath { get; }
+		public string SrcPath { get; }
 
-		public Task<bool> Run()
+		public string DstPath { get; }
+
+		public bool Run()
+		{
+			if (File.Exists(SrcPath))
+			{
+				(new FileInfo(DstPath)).Directory.Create();
+				File.Copy(SrcPath, DstPath, true);
+			}
+			return true;
+		}
+
+		public Task<bool> RunAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Task.Factory.StartNew(/*async*/ () =>
 			{
-				if (File.Exists(SrcFilePath))
-				{
-					(new FileInfo(DstFilePath)).Directory.Create();
-					File.Copy(SrcFilePath, DstFilePath, true);
-				}
-				tcs.SetResult(true);
+				tcs.SetResult(Run());
 			}, TaskCreationOptions.LongRunning);
 			return tcs.Task;
 		}

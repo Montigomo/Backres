@@ -63,40 +63,46 @@ namespace Backres
 
 		#endregion
 
-
-		public async Task Backup()
+		private void ToggleControls(params Control[] excludeControls)
 		{
-			var name = ((BrItem)dataGridMain.SelectedItem).Name;
-			if (!String.IsNullOrWhiteSpace(name))
-				await BrConfig.Instance.Backup(name);
+			var tc = this.FindVisualChildren<Control>().Where(ctrl => (ctrl.Tag?.ToString() == "toggle") && !excludeControls.Contains(ctrl)).ToList();
+			foreach (var control in tc)
+			{
+				control.IsEnabled = !control.IsEnabled;
+			}
+
+			// CancelButton.Enabled = true;
 		}
 
-		public async Task Restore()
+
+		public async Task RunItem(ActionDirection bDirection)
 		{
+			ToggleControls();
 			var name = ((BrItem)dataGridMain.SelectedItem).Name;
 			if (!String.IsNullOrWhiteSpace(name))
-				await BrConfig.Instance.Restore(name);
+				await BrConfig.Instance.RunActions(name, bDirection);
+			ToggleControls();
 		}
 
 
 		private async void menuItemCmBackup_Click(object sender, RoutedEventArgs e)
 		{
-			await Backup();
+			await RunItem(ActionDirection.Backup);
 		}
 
 		private async void menuItemCmRestore_Click(object sender, RoutedEventArgs e)
 		{
-			await Restore();
+			await RunItem(ActionDirection.Restore);
 		}
 
 		private async void BntBackup_Click(object sender, RoutedEventArgs e)
 		{
-			await Backup();
+			await RunItem(ActionDirection.Backup);
 		}
 
 		private async void BntRestore_Click(object sender, RoutedEventArgs e)
 		{
-			await Restore();
+			await RunItem(ActionDirection.Restore);
 		}
 
 		private void ButtonTest_Click(object sender, RoutedEventArgs e)

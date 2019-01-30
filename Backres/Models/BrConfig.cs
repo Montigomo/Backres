@@ -1,15 +1,11 @@
-﻿using System;
-using System.ComponentModel;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Backres.Models
 {
@@ -67,58 +63,30 @@ namespace Backres.Models
 		
 		#endregion
 
-		#region Backup
+		#region Backup Restore
 
-		public async Task Backup()
+		public Task<bool> RunActions(string name, ActionDirection aDirection)
 		{
-			foreach (var item in Items)
-				await Backup(item.Name);
-		}
-
-		public async Task Backup(string name)
-		{
-			BrItem Item = Items.FirstOrDefault(item => item.Name == name);
-			if (Item == null)
-				return;
-			foreach (var backupAction in Item.BackupActions.OrderBy(i => i.Order))
+			var tcs = new TaskCompletionSource<bool>();
+			Task.Factory.StartNew(/*async*/ () =>
 			{
-				var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + backupAction.Name);
+				BrItem Item = Items.FirstOrDefault(item => item.Name == name);
+				var ActionItems = aDirection == ActionDirection.Backup ? Item.BackupActions.OrderBy(i => i.Order) : Item.RestoreActions.OrderBy(i => i.Order);
+				foreach (var action in ActionItems)
+				{
+					var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + action.Name);
 
-				if (type == null)
-					continue;
+					if (type == null)
+						continue;
 
-				IAction action = (IAction)Activator.CreateInstance(type, backupAction, ActionDirection.Backup);
+					IAction iaction = (IAction)Activator.CreateInstance(type, action, aDirection);
 
-				await action.Run();
-			}
-		}
-
-		#endregion
-
-		#region Restore
-
-		public async Task Restore()
-		{
-			foreach (var item in Items)
-				await Restore(item.Name);
-		}
-
-		public async Task Restore(string name)
-		{
-			BrItem Item = Items.FirstOrDefault(item => item.Name == name);
-			if (Item == null)
-				return;
-			foreach (var restoreAction in Item.RestoreActions.OrderBy(i => i.Order))
-			{
-				var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + restoreAction.Name);
-
-				if (type == null)
-					continue;
-
-				IAction action = (IAction)Activator.CreateInstance(type, restoreAction, ActionDirection.Restore);
-
-				await action.Run();
-			}
+					iaction.Run();
+				}
+				Thread.Sleep(1000);
+				tcs.SetResult(true);
+			}, TaskCreationOptions.LongRunning);
+			return tcs.Task;
 		}
 
 		#endregion
@@ -141,9 +109,11 @@ namespace Backres.Models
 
 		public int Order { get; set; }
 
-		public string SrcFile { get; set; }
+		public bool Overwrite { get; set; } = true;
 
-		public string DstFile { get; set; }
+		public string SrcPath { get; set; }
+
+		public string DstPath { get; set; }
 
 		public string RegistryKey { get; set; }
 
@@ -151,7 +121,9 @@ namespace Backres.Models
 
 	public interface IAction
 	{
-		Task<bool> Run();
+		bool Run();
+
+		Task<bool> RunAsync();
 	}
 
 
