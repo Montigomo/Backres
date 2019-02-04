@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reflection;
+using System.Diagnostics;
 using Backres.Models;
+using Backres.Infrastructure;
 using Microsoft.Win32;
 
 namespace Backres
@@ -32,10 +35,15 @@ namespace Backres
 
 		public void Inititalize()
 		{
+			//_textBoxListener = new TextBoxTraceListener(txtDisplayTrace);
+			Trace.Listeners.Add(new TextBoxTraceListener(txtDisplayTrace));
+
 			dataGridMain.ItemsSource = BrConfig.Instance.Items;
+			Trace.WriteLine("Application initialized.");
 		}
 
-		#region 
+		#region Commands
+
 		public string GetUninstallCommandFor(string productDisplayName)
 		{
 			RegistryKey localMachine = Registry.LocalMachine;
@@ -65,9 +73,25 @@ namespace Backres
 
 		private void ToggleControls(params Control[] excludeControls)
 		{
-			var tc = this.FindVisualChildren<Control>().Where(ctrl => (ctrl.Tag?.ToString() == "toggle") && !excludeControls.Contains(ctrl)).ToList();
+			var tc = this.FindVisualChildren<Control>().Where(ctrl => ctrl.Tag != null && ctrl.Tag.ToString().StartsWith("toggle") && !excludeControls.Contains(ctrl)).ToList();
+
 			foreach (var control in tc)
 			{
+				string[] vars = control.Tag.ToString().Split('|');
+				if (vars.Length >= 3)
+				{
+					//if (control is MenuItem)
+					//	((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
+					switch (control)
+					{
+						case MenuItem mi:
+							((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
+							break;
+						default:
+							break;
+					}
+
+				}
 				control.IsEnabled = !control.IsEnabled;
 			}
 
@@ -105,11 +129,14 @@ namespace Backres
 			await RunItem(ActionDirection.Restore);
 		}
 
-		private void ButtonTest_Click(object sender, RoutedEventArgs e)
+		private async void RunMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			var t = BrConfig.Instance;
+			ToggleControls();
+			await Task.Run(() =>
+			{
+				Thread.Sleep(5000);
+			});
+			ToggleControls();
 		}
-
-
 	}
 }

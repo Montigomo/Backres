@@ -3,7 +3,7 @@ using System.IO.MemoryMappedFiles;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
-using Bacres.Native;
+using Backres.Native;
 
 namespace Backres
 {

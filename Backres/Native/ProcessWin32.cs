@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace Bacres.Native
+namespace Backres.Native
 {
   class ProcessWin32
   {

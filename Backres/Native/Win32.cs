@@ -2,7 +2,7 @@
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace Bacres.Native
+namespace Backres.Native
 {
   public class Win32
   {

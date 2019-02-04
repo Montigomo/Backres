@@ -3,19 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Bacres"
+        xmlns:local="clr-namespace:Backres"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="445.538">
+	<Window.Resources>
+		<Style x:Key="notCalledBorder" TargetType="{x:Type Border}">
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="BorderBrush" Value="Black" />
+		</Style>
+		<SolidColorBrush Color="#FFA0A0A0" x:Key="buttonBrush" />
+	</Window.Resources>
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="24"/>
 			<RowDefinition/>
 			<RowDefinition Height="64"/>
 		</Grid.RowDefinitions>
+		<Menu Height="22" x:Name="MainMenu" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="3">
+			<MenuItem x:Name="RunMenuItem" Header="Test" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
+		</Menu>
 		<DataGrid x:Name="dataGridMain" HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="0" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="#FFAAAAAA" Tag="toggle" IsReadOnly="True" >
+							VerticalAlignment="Stretch" AutoGenerateColumns="False" Grid.Row="1" CanUserReorderColumns="False" 
+							CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="{StaticResource buttonBrush}" Tag="toggle" IsReadOnly="True" >
 			<DataGrid.ContextMenu>
 				<ContextMenu>
 					<MenuItem x:Name="menuItemCmBackup" Header="Backup" Click="menuItemCmBackup_Click"/>
@@ -36,13 +48,8 @@
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 		</DataGrid>
-		<Grid Grid.Row="1">
-			<Grid.RowDefinitions>
-				<RowDefinition/>
-				<RowDefinition/>
-			</Grid.RowDefinitions>
-			<Button Grid.Row="0" x:Name="buttonTest" Content="TEST" Click="ButtonTest_Click" Height="21" Margin="10,6,379,5" />
-			<TextBlock Grid.Row="1" TextWrapping="Wrap" Background="#FFE6E6E6" />
-		</Grid>
+		<Border Grid.Row="2"  BorderThickness="1" BorderBrush="{StaticResource buttonBrush}">
+			<TextBlock x:Name="txtDisplayTrace" TextWrapping="Wrap" Background="#FFE6E6E6" />
+		</Border>
 	</Grid>
 </Window>

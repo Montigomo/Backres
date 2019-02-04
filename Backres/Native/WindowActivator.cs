@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Bacres.Native
+namespace Backres.Native
 {
   public class WindowActivator
   {
