@@ -10,18 +10,18 @@ namespace Backres.Models
 {
 	public static class Extentions
 	{
-		public static string NormilizePath(this string value, string itemName = null)
+		public static string NormilizePath(this string value, Action action = null)
 		{
 			var localString = value;
 			IDictionary<string, string> substitudeDictionary;
-			if (String.IsNullOrWhiteSpace(itemName))
+			if (action == null)
 			{
 				substitudeDictionary = BrConfig.PathKeys;
 			}
 			else
 			{
 				substitudeDictionary = new Dictionary<string, string>(BrConfig.PathKeys);
-				substitudeDictionary.Add("Name", itemName);
+				substitudeDictionary.Add("Name", action.ItemName);
 			}
 
 			foreach (KeyValuePair<string, string> kvp in substitudeDictionary)

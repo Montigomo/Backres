@@ -28,8 +28,8 @@
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
-								<Button x:Name="bntBackup" Click="BntBackup_Click" Margin="3,0">Backup</Button>
-								<Button x:Name="bntRestore" Margin="3,0" Click="BntRestore_Click" >Restore</Button>
+								<Button x:Name="bntBackup" Click="BntBackup_Click" Margin="6,2,3,2">Backup</Button>
+								<Button x:Name="bntRestore" Margin="3,2,6,2" Click="BntRestore_Click" >Restore</Button>
 							</StackPanel>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>

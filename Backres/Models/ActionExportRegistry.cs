@@ -8,7 +8,7 @@ using System.IO;
 namespace Backres.Models
 {
 
-	public class ActionExportRegistry : BaseAction, IAction
+	public class ActionExportRegistry : Action, IAction
 	{
 
 		public ActionExportRegistry(BrAction bAction, ActionDirection bDirection) : base(bAction, bDirection)

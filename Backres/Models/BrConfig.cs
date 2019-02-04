@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ namespace Backres.Models
 
 		private static readonly string _exeDirectory = Path.GetDirectoryName(_exePath);
 
-		private static string FilePath { get; } = Path.Combine(_exeDirectory, @"appsettings.json");
+		private static string _filePath  = Path.Combine(_exeDirectory, @"appsettings.json");
 
 		private static string _brSettingFolder = _exeDirectory;
 
@@ -27,11 +28,14 @@ namespace Backres.Models
 
 		private static string _appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
+		private static string _machineName = Environment.MachineName;
+
 		public static Dictionary<string, string> PathKeys = new Dictionary<string, string>
 		{
 			{ "AppData" , _appDataFolder },
 			{ "LocalAppData" , _localAppDataFolder },
-			{ "BrSettingFolder", _brSettingFolder }
+			{ "BrSettingFolder", _brSettingFolder },
+			{ "MachineName",  _machineName}
 		};
 
 		private static readonly Lazy<BrConfig> _instance = new Lazy<BrConfig>(Load);
@@ -49,7 +53,7 @@ namespace Backres.Models
 		{
 			var config = new BrConfig()
 			{
-				Items = JsonConvert.DeserializeObject<List<BrItem>>(File.ReadAllText(FilePath))
+				Items = JsonConvert.DeserializeObject<List<BrItem>>(File.ReadAllText(_filePath))
 			};
 
 			return config;
@@ -96,7 +100,28 @@ namespace Backres.Models
 	 
 	public class BrItem
 	{
-		public string Name { get; set; }
+
+		[JsonConstructor]
+		public BrItem(string name)
+		{
+			Name = name.NormilizePath();
+		}
+
+		//[OnDeserialized]
+		//internal void OnDeserializedMethod(StreamingContext context)
+		//{
+		//	Name = "bbb";
+		//}
+
+		//[OnDeserializing]
+		//internal void OnDeserializingMethod(StreamingContext context)
+		//{
+		//	Name = "bbb";
+		//}
+
+		public string Name { get; }
+
+		public bool IsMachinable { get; set; } = false;
 
 		public List<BrAction> BackupActions { get; set; }
 
@@ -133,19 +158,19 @@ namespace Backres.Models
 	}
 
 
-	public abstract class BaseAction
+	public abstract class Action
 	{
 
-		public BaseAction(BrAction bAction, ActionDirection bDirection)
+		public Action(BrAction bAction, ActionDirection bDirection)
 		{
 			if (bAction.ActionName != ActionName)
 				throw new Exception("Invalid argument for ActionCopy constructor");
 			ItemName = bAction.ItemName;
 			Overwrite = bAction.Overwrite;
 			ActionDirection = bDirection;
-			SrcPath = bAction.SrcPath?.NormilizePath(ItemName);
-			DstPath = bAction.DstPath?.NormilizePath(ItemName);
 			RegistryKey = bAction.RegistryKey;
+			SrcPath = bAction.SrcPath?.NormilizePath(this);
+			DstPath = bAction.DstPath?.NormilizePath(this);
 		}
 
 		protected abstract string ActionName { get; }
@@ -154,7 +179,7 @@ namespace Backres.Models
 
 		protected bool Overwrite { get; }
 
-		protected string ItemName { get; }
+		public string ItemName { get; }
 
 		protected string SrcPath { get; }
 
