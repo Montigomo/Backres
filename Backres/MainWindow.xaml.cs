@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Reflection;
 using System.Diagnostics;
 using Backres.Models;
@@ -102,10 +103,19 @@ namespace Backres
 		public async Task RunItem(ActionDirection bDirection)
 		{
 			ToggleControls();
-			var name = ((BrItem)dataGridMain.SelectedItem).Name;
-			if (!String.IsNullOrWhiteSpace(name))
-				await BrConfig.Instance.RunActions(name, bDirection);
+			try
+			{
+				var name = ((BrItem)dataGridMain.SelectedItem).Name;
+				if (!String.IsNullOrWhiteSpace(name))
+					await BrConfig.Instance.RunActions(name, bDirection);
+			}
+			catch (Exception e)
+			{
+				//await Dispatcher.BeginInvoke(DispatcherPriority.Normal, (System.Action)(() => Trace.WriteLine(e.Message)));
+				Trace.WriteLine(e.Message);
+			}
 			ToggleControls();
+
 		}
 
 
@@ -138,5 +148,7 @@ namespace Backres
 			});
 			ToggleControls();
 		}
+
+
 	}
 }

@@ -73,24 +73,31 @@ namespace Backres.Models
 		public Task<bool> RunActions(string name, ActionDirection aDirection)
 		{
 			var tcs = new TaskCompletionSource<bool>();
+			
 			Task.Factory.StartNew(/*async*/ () =>
 			{
-				BrItem Item = Items.FirstOrDefault(item => item.Name == name);
-				var ActionItems = aDirection == ActionDirection.Backup ? Item.BackupActions.OrderBy(i => i.Order) : Item.RestoreActions.OrderBy(i => i.Order);
-				foreach (var action in ActionItems)
+				try
 				{
-					var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + action.ActionName);
+					BrItem Item = Items.FirstOrDefault(item => item.Name == name);
+					var ActionItems = aDirection == ActionDirection.Backup ? Item.BackupActions.OrderBy(i => i.Order) : Item.RestoreActions.OrderBy(i => i.Order);
+					foreach (var action in ActionItems)
+					{
+						var type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == "Action" + action.ActionName);
 
-					if (type == null)
-						continue;
-					action.ItemName = name;
-					IAction iaction = (IAction)Activator.CreateInstance(type, action, aDirection);
+						if (type == null)
+							continue;
+						action.ItemName = name;
+						IAction iaction = (IAction)Activator.CreateInstance(type, action, aDirection);
 
-					iaction.Run();
+						iaction.Run();
+					}
 				}
-				Thread.Sleep(500);
+				catch(Exception e)
+				{
+					tcs.SetException(e);
+				}
 				tcs.SetResult(true);
-			}, TaskCreationOptions.LongRunning);
+			}, TaskCreationOptions.None);
 			return tcs.Task;
 		}
 
