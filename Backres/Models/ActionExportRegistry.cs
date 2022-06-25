@@ -8,10 +8,10 @@ using System.IO;
 namespace Backres.Models
 {
 
-	public class ActionExportRegistry : Action, IAction
+	internal class ActionExportRegistry : ActionAbstract, IAction
 	{
 
-		public ActionExportRegistry(BrAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
+		public ActionExportRegistry(BackresAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
 		{
 
 		}
@@ -22,7 +22,7 @@ namespace Backres.Models
 		public bool Run()
 		{
 			(new FileInfo(DstPath)).Directory.Create();
-			BrRegistryHelper.ExportRegistry(RegistryKey, DstPath);
+			BackresRegistryHelper.ExportRegistry(RegistryKey, DstPath);
 			return true;
 		}
 

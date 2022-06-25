@@ -7,10 +7,10 @@ using System.IO;
 
 namespace Backres.Models
 {
-	public class ActionCopyFolder : Action, IAction
+	internal class ActionCopyFolder : ActionAbstract, IAction
 	{
 
-		public ActionCopyFolder(BrAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
+		public ActionCopyFolder(BackresAction bAction, ActionDirection bDirection) : base(bAction, bDirection)
 		{
 		}
 

@@ -8,19 +8,19 @@ using System.Windows.Media;
 
 namespace Backres.Models
 {
-	public static class Extentions
+	internal static class Extentions
 	{
-		public static string NormilizePath(this string value, Action action = null)
+		public static string NormilizePath(this string value, ActionAbstract action = null)
 		{
 			var localString = value;
 			IDictionary<string, string> substitudeDictionary;
 			if (action == null)
 			{
-				substitudeDictionary = BrConfig.PathKeys;
+				substitudeDictionary = BackresConfig.PathKeys;
 			}
 			else
 			{
-				substitudeDictionary = new Dictionary<string, string>(BrConfig.PathKeys);
+				substitudeDictionary = new Dictionary<string, string>(BackresConfig.PathKeys);
 				substitudeDictionary.Add("Name", action.ItemName);
 			}
 
