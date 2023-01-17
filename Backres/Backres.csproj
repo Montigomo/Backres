@@ -2,26 +2,46 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
-		<!--<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<!--<ProduceReferenceAssembly>False</ProduceReferenceAssembly-->
 		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
-		<IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>-->
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<ApplicationIcon>Images\Bare.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Actions\logitech.json" />
+	  <None Remove="Actions\OpenSSH_Win32.json" />
+	  <None Remove="Actions\putty.json" />
+	  <None Remove="Actions\rar.json" />
+	  <None Remove="Actions\utorrent.json" />
+	  <None Remove="Actions\vlc.json" />
+	  <None Remove="backres-template.json" />
+	  <None Remove="backres.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Images\Bare.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Actions\logitech.json" />
+	  <EmbeddedResource Include="Actions\OpenSSH_Win32.json" />
+	  <EmbeddedResource Include="Actions\putty.json" />
+	  <EmbeddedResource Include="Actions\rar.json" />
+	  <EmbeddedResource Include="Actions\utorrent.json" />
+	  <EmbeddedResource Include="Actions\vlc.json" />
+	  <EmbeddedResource Include="backres-template.json" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Utilities\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.Management" Version="6.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="backres.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+	  <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
 	</ItemGroup>
 
 </Project>

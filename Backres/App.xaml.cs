@@ -3,6 +3,7 @@ using System.IO.MemoryMappedFiles;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
+using Backres.Models;
 using Backres.Native;
 
 
@@ -28,7 +29,6 @@ namespace Backres
 
         protected override void OnStartup(StartupEventArgs e)
         {
-
             string[] commandLineArgs = System.Environment.GetCommandLineArgs();
 
             try

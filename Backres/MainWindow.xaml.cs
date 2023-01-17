@@ -3,6 +3,7 @@ using Backres.Models;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -26,8 +27,6 @@ namespace Backres
 
         public void Inititalize()
         {
-            //_textBoxListener = new TextBoxTraceListener(txtDisplayTrace);
-            var pcfingerprint = PcFingerPrint.Value();
 
             Trace.Listeners.Add(new TextBoxTraceListener(txtDisplayTrace));
             try
@@ -45,7 +44,9 @@ namespace Backres
                 Trace.WriteLine($"Error - :{ex.Message}");
             }
             Trace.WriteLine($"Application initialized.");
+            Trace.WriteLine($"Machine ID - {PcFingerPrint.Value()}");
         }
+
 
         #region Commands
 
@@ -111,7 +112,7 @@ namespace Backres
             {
                 var name = ((BackresItem)dataGridMain.SelectedItem).Name;
                 if (!String.IsNullOrWhiteSpace(name))
-                    await BackresConfig.Instance.RunActions(name, bDirection);
+                    await BackresConfig.Instance.RunAction(name, bDirection);
             }
             catch (Exception e)
             {

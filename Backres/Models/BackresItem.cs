@@ -12,7 +12,7 @@ namespace Backres.Models
 		//[JsonConstructor]
 		public BackresItem(string name)
 		{
-			Name = name.NormilizePath();
+			Name = name;
 		}
 
 		//[OnDeserialized]

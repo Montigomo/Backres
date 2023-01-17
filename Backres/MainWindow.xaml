@@ -31,6 +31,8 @@
         <Style x:Key="MyStyle" TargetType="{x:Type DataGridCell}">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="14px" />
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--<Style.Triggers>
 				<DataTrigger Binding="{Binding IsProcessed}" Value="True">
 					<Setter Property="FontWeight" Value="Bold"/>
@@ -41,9 +43,16 @@
         <Style x:Key="DataGrid_Button_Style" TargetType="{x:Type Button}">
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="FontSize" Value="14px" />
-            <Setter Property="Padding" Value="6,1" />
             <Setter Property="Typography.Capitals" Value="AllSmallCaps" />
-            <Setter Property="Height" Value="26px" />
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="Margin" Value="3"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5" />
+                </Style>
+            </Style.Resources>
         </Style>
 
     </Window.Resources>
@@ -55,6 +64,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
+            <RowDefinition Height="26"/>
             <RowDefinition/>
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
@@ -63,9 +73,10 @@
             <MenuItem x:Name="RunMenuItem" Header="Test" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
             <MenuItem x:Name="AboutMenuItem" Header="About" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
         </Menu>
+        <Label Content="Storage: " Background="#FFE6E6E6" VerticalAlignment="Top" Height="26" Grid.Row="1"/>
         <DataGrid x:Name="dataGridMain" HorizontalAlignment="Stretch" HeadersVisibility="None"
 							VerticalAlignment="Stretch" AutoGenerateColumns="False" 
-							Grid.Row="1" CanUserReorderColumns="False" 
+							Grid.Row="2" CanUserReorderColumns="False" 
 							CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="{StaticResource buttonBrush}" 
 							Tag="toggle" IsReadOnly="True" 
 							CellStyle="{StaticResource Body_Content_DataGrid_Centering}">
@@ -77,19 +88,27 @@
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Provider" Binding="{Binding Name}" MinWidth="150"  CellStyle="{StaticResource MyStyle}"/>
-                <DataGridTemplateColumn Header="Actions">
+                <DataGridTemplateColumn Header="Action_Backup">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Style="{StaticResource DataGrid_Button_Style}" x:Name="bntBackup" Click="BntBackup_Click" Margin="12,3,6,3">Backup</Button>
-                                <Button Style="{StaticResource DataGrid_Button_Style}" x:Name="bntRestore" Click="BntRestore_Click"  Margin="6,3,12,3" >Restore</Button>
+                                <Button Style="{DynamicResource DataGrid_Button_Style}" x:Name="bntBackup" Click="BntBackup_Click">Backup</Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Action_Restore">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{StaticResource DataGrid_Button_Style}" x:Name="bntRestore" Click="BntRestore_Click">Restore</Button>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Border Grid.Row="2"  BorderThickness="1" BorderBrush="{StaticResource buttonBrush}">
+        <Border Grid.Row="3"  BorderThickness="1" BorderBrush="{StaticResource buttonBrush}">
             <TextBlock x:Name="txtDisplayTrace" TextWrapping="Wrap" Background="#FFE6E6E6" />
         </Border>
     </Grid>
