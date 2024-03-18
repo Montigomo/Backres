@@ -1,0 +1,59 @@
+{
+  "Name": "uTorrent",
+  "isMachinable": "true",
+  "BackupActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{ApplicationData}\\uTorrent\\resume.dat",
+      "DstPath": "{StorageFolder}\\{Name}\\resume.dat"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 1,
+      "SrcPath": "{ApplicationData}\\uTorrent\\settings.dat",
+      "DstPath": "{StorageFolder}\\{Name}\\settings.dat"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 2,
+      "SrcPath": "{ApplicationData}\\uTorrent\\version.dll",
+      "DstPath": "{StorageFolder}\\{Name}\\version.dll"
+    },
+    {
+      "Name": "CopyFolder",
+      "Order": 3,
+      "Overwrite": true,
+      "SrcPath": "{ApplicationData}\\uTorrent\\torrents",
+      "DstPath": "{StorageFolder}\\{Name}\\torrents"
+    }
+  ],
+  "RestoreActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{StorageFolder}\\{Name}\\resume.dat",
+      "DstPath": "{ApplicationData}\\uTorrent\\resume.dat"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 1,
+      "SrcPath": "{StorageFolder}\\{Name}\\settings.dat",
+      "DstPath": "{ApplicationData}\\uTorrent\\settings.dat"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 1,
+      "SrcPath": "{StorageFolder}\\{Name}\\version.dll",
+      "DstPath": "{ApplicationData}\\uTorrent\\version.dll"
+    },
+    {
+      "Name": "CopyFolder",
+      "Order": 2,
+      "Overwrite": true,
+      "SrcPath": "{StorageFolder}\\{Name}\\torrents",
+      "DstPath": "{ApplicationData}\\uTorrent\\torrents"
+    }
+  ]
+
+}

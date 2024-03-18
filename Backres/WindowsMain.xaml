@@ -12,6 +12,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="Black" />
         </Style>
+        
         <SolidColorBrush Color="#FFA0A0A0" x:Key="buttonBrush" />
 
         <Style x:Key="Body_Content_DataGrid_Centering" TargetType="{x:Type DataGridCell}">
@@ -68,26 +69,36 @@
             <RowDefinition/>
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
+        
         <Menu Height="22" x:Name="MainMenu" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="3">
-            <MenuItem x:Name="FileMenuItem" Header="File" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
-            <MenuItem x:Name="RunMenuItem" Header="Test" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
-            <MenuItem x:Name="AboutMenuItem" Header="About" Height="22" Tag="toggle|Test|Cancel" Click="RunMenuItem_Click"/>
+            <MenuItem x:Name="FileMenuItem" Header="File" Height="22" Tag="toggle|Test|Cancel">
+                <MenuItem x:Name="FileMenuItemSaveStorage"  Header="Save items ..." Height="22"  Click="FileMenuItemSaveStorage_Click" />
+                <MenuItem x:Name="FileMenuItemLoasStorage"  Header="Load items ..." Height="22"  Click="FileMenuItemLoasStorage_Click" />
+            </MenuItem>
+            <MenuItem x:Name="RunMenuItem" Header="Tools" Height="22" Tag="toggle|Test|Cancel">
+                <MenuItem Header="Settings" x:Name="SettingsMenuItem" Height="22" Tag="toggle|Test|Cancel"/>
+                <MenuItem Header="Test" x:Name="TestMenuItem" Height="22" Tag="toggle|Test|Cancel" Click="TestMenuItem_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="AboutMenuItem" Header="About" Height="22" Tag="toggle|Test|Cancel" />
         </Menu>
+        
         <Label Content="Storage: " Background="#FFE6E6E6" VerticalAlignment="Top" Height="26" Grid.Row="1"/>
+        
         <DataGrid x:Name="dataGridMain" HorizontalAlignment="Stretch" HeadersVisibility="None"
 							VerticalAlignment="Stretch" AutoGenerateColumns="False" 
 							Grid.Row="2" CanUserReorderColumns="False" 
 							CanUserResizeRows="False" CanUserAddRows="False" BorderBrush="{StaticResource buttonBrush}" 
 							Tag="toggle" IsReadOnly="True" 
-							CellStyle="{StaticResource Body_Content_DataGrid_Centering}">
+							CellStyle="{StaticResource Body_Content_DataGrid_Centering}" PreviewKeyDown="dataGridMain_PreviewKeyDown">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="menuItemCmBackup" Header="Backup" Click="menuItemCmBackup_Click"/>
                     <MenuItem x:Name="menuItemCmRestore" Header="Restore" Click="menuItemCmRestore_Click"/>
+                    <MenuItem x:Name="menuItemAddItem" Header="AddItem" Click="menuItemAddItem_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Provider" Binding="{Binding Name}" MinWidth="150"  CellStyle="{StaticResource MyStyle}"/>
+                <DataGridTextColumn Header="Provider" Binding="{Binding Key}" MinWidth="150"  CellStyle="{StaticResource MyStyle}"/>
                 <DataGridTemplateColumn Header="Action_Backup">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -108,8 +119,10 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        
         <Border Grid.Row="3"  BorderThickness="1" BorderBrush="{StaticResource buttonBrush}">
             <TextBlock x:Name="txtDisplayTrace" TextWrapping="Wrap" Background="#FFE6E6E6" />
         </Border>
+        
     </Grid>
 </Window>

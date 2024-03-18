@@ -1,0 +1,21 @@
+{
+  "Name": "OpenSSH Win32",
+  "BackupActions": [
+    {
+      "Name": "CopyFolder",
+      "Order": 0,
+      "Overwrite": true,
+      "SrcPath": "{UserProfile}\\.ssh",
+      "DstPath": "{StorageFolder}\\OpenSSH-win32"
+    }
+  ],
+  "RestoreActions": [
+    {
+      "Name": "CopyFolder",
+      "Order": 0,
+      "Overwrite": true,
+      "SrcPath": "{StorageFolder}\\OpenSSH-win32",
+      "DstPath": "{UserProfile}\\.ssh"
+    }
+  ]
+}

@@ -9,7 +9,21 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="MainWindow.xaml">
+    <Compile Update="WndSelectAndAddItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WndAbout.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="WindowsMain.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WndSelectAndAddItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WndAbout.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

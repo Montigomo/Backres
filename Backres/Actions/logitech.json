@@ -1,0 +1,31 @@
+{
+  "Name": "Logitech",
+  "BackupActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{LocalAppData}\\LGHUB\\settings.db",
+      "DstPath": "{StorageFolder}\\Logitech\\LGHUB\\settings.db"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{LocalAppData}\\LGHUB\\Logitech Gaming Software\\profiles\\{09D92D75-3C8C-4723-B06C-4090BCB899C0}.xml",
+      "DstPath": "{StorageFolder}\\Logitech\\{09D92D75-3C8C-4723-B06C-4090BCB899C0}.xml"
+    }
+  ],
+  "RestoreActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{StorageFolder}\\Logitech\\LGHUB\\settings.json",
+      "DstPath": "{LocalAppData}\\LGHUB\\settings.db"
+    },
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{StorageFolder}\\Logitech\\{09D92D75-3C8C-4723-B06C-4090BCB899C0}.xml",
+      "DstPath": "{LocalAppData}\\\\Logitech\\Logitech Gaming Software\\profiles\\{09D92D75-3C8C-4723-B06C-4090BCB899C0}.xml"
+    }
+  ]
+}

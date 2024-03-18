@@ -35,7 +35,8 @@ namespace Backres.Models
             }
 
             var localReplacement = new Dictionary<string, string>() {
-                { "{StorageFolder}", BackresConfig.Instance.Storage }
+                { "{StorageFolder}", BackresConfig.Instance.Storage },
+                { "{Name}", action.ItemName }
             };
 
             foreach (var item in localReplacement)

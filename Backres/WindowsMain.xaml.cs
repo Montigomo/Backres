@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Backres
 {
@@ -33,11 +34,6 @@ namespace Backres
             {
                 dataGridMain.ItemsSource = BackresConfig.Instance.Items;
 
-                //var _appDirectory = AppContext.BaseDirectory;
-
-                //var _filePath = System.IO.Path.Combine(_appDirectory, @"backres.json");
-
-                //Trace.WriteLine($"Application initialized. {_filePath} {Environment.NewLine} {Environment.ProcessPath}");
             }
             catch (Exception ex)
             {
@@ -83,25 +79,26 @@ namespace Backres
 
             foreach (var control in tc)
             {
-                string[] vars = control.Tag.ToString().Split('|');
-                if (vars.Length >= 3)
-                {
-                    //if (control is MenuItem)
-                    //	((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
-                    switch (control)
-                    {
-                        case MenuItem mi:
-                            ((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
-                            break;
-                        default:
-                            break;
-                    }
+                //string[] vars = control.Tag.ToString().Split('|');
+                //if (vars.Length >= 3)
+                //{
+                //    //if (control is MenuItem)
+                //    //	((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
+                //    switch (control)
+                //    {
+                //        case MenuItem mi:
+                //            ((MenuItem)control).Header = ((MenuItem)control).Header.ToString() == vars[1] ? vars[2] : vars[1];
+                //            break;
+                //        default:
+                //            break;
+                //    }
 
-                }
+                //}
                 control.IsEnabled = !control.IsEnabled;
             }
 
             // CancelButton.Enabled = true;
+
         }
 
 
@@ -110,7 +107,7 @@ namespace Backres
             ToggleControls();
             try
             {
-                var name = ((BackresItem)dataGridMain.SelectedItem).Name;
+                var name = ((ObservableKeyValuePair<string, BackresItem>)dataGridMain.SelectedItem).Key;
                 if (!String.IsNullOrWhiteSpace(name))
                     await BackresConfig.Instance.RunAction(name, bDirection);
             }
@@ -124,6 +121,8 @@ namespace Backres
         }
 
 
+        #region Context Menu Events
+
         private async void menuItemCmBackup_Click(object sender, RoutedEventArgs e)
         {
             await RunItem(ActionDirection.Backup);
@@ -133,6 +132,16 @@ namespace Backres
         {
             await RunItem(ActionDirection.Restore);
         }
+
+        private void menuItemAddItem_Click(object sender, RoutedEventArgs e)
+        {
+            var wnd = new WndSelectAndAddItem();
+            wnd.Owner = this;
+            var dr = wnd.ShowDialog();
+            BackresConfig.Instance.AddItems(wnd.SelectedItems);
+        }
+
+        #endregion
 
         private async void BntBackup_Click(object sender, RoutedEventArgs e)
         {
@@ -144,15 +153,6 @@ namespace Backres
             await RunItem(ActionDirection.Restore);
         }
 
-        private async void RunMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleControls();
-            await Task.Run(() =>
-            {
-                Thread.Sleep(5000);
-            });
-            ToggleControls();
-        }
 
         private void WindowMain1_Loaded(object sender, RoutedEventArgs e)
         {
@@ -165,5 +165,52 @@ namespace Backres
                 //MyControl.Height = scrollViewer.ViewportHeight;
             }
         }
+
+        private void Test() {
+            var Overwrite = true;
+            var SrcPath = "D:\\work\\csharp\\Backres\\Backres\\bin\\Debug\\net7.0-windows\\AGIDESKTOP (35C5-F948-6B27-059C-A533-5494-6749-7941)\\rar\\rarreg.key";
+            var DstPath = "C:\\Program Files\\WinRAR\rarreg.key";
+            File.Copy(SrcPath, DstPath, Overwrite);
+        }
+
+        private void dataGridMain_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var grid = (DataGrid)sender;
+            if (Key.Delete == e.Key)
+            {
+                for(int i =0; i < grid.SelectedItems.Count; i++)
+                {
+                    var row = (ObservableKeyValuePair<string, BackresItem>)grid.SelectedItems[i];
+                    BackresConfig.Instance.DeleteItem(row);
+                }
+            }
+        }
+
+        #region Top app menu
+
+        private async void RunMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FileMenuItemLoasStorage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FileMenuItemSaveStorage_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleControls();
+            e.Handled = true;
+            BackresConfig.Instance.SaveItems();
+            ToggleControls();
+        }
+
+        private void TestMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Test();
+        }
+
+        #endregion
     }
 }

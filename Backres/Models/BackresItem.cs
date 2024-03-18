@@ -9,23 +9,10 @@ namespace Backres.Models
 	internal class BackresItem
 	{
 
-		//[JsonConstructor]
 		public BackresItem(string name)
 		{
 			Name = name;
 		}
-
-		//[OnDeserialized]
-		//internal void OnDeserializedMethod(StreamingContext context)
-		//{
-		//	Name = "bbb";
-		//}
-
-		//[OnDeserializing]
-		//internal void OnDeserializingMethod(StreamingContext context)
-		//{
-		//	Name = "bbb";
-		//}
 
 		public string Name { get; }
 

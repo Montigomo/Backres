@@ -1,0 +1,19 @@
+{
+  "Name": "Vlc",
+  "BackupActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{ApplicationData}\\vlc\\ml.xspf",
+      "DstPath": "{StorageFolder}\\vlc\\ml.xspf"
+    }
+  ],
+  "RestoreActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{StorageFolder}\\vlc\\ml.xspf",
+      "DstPath": "{ApplicationData}\\vlc\\ml.xspf"
+    }
+  ]
+}

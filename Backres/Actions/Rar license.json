@@ -1,0 +1,19 @@
+{
+  "Name": "Rar license",
+  "BackupActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "C:\\Program Files\\WinRAR\\rarreg.key",
+      "DstPath": "{StorageFolder}\\rar\\rarreg.key"
+    }
+  ],
+  "RestoreActions": [
+    {
+      "Name": "CopyFile",
+      "Order": 0,
+      "SrcPath": "{StorageFolder}\\rar\\rarreg.key",
+      "DstPath": "C:\\Program Files\\WinRAR\\rarreg.key"
+    }
+  ]
+}

@@ -10,6 +10,10 @@ using System.Net;
 using System.IO.Packaging;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Diagnostics;
 
 namespace Backres.Models
 {
@@ -30,13 +34,14 @@ namespace Backres.Models
 
         private static BackresConfig Initialize()
         {
-
             var config = new BackresConfig()
             {
 
             };
 
-            config.Load();
+            config.LoadCommonItems();
+
+            config.LoadItems();
 
             return config;
         }
@@ -61,19 +66,17 @@ namespace Backres.Models
 
         #endregion
 
-        #region Properties 
+        #region Storage & Items
 
-        public IList<BackresItem> Items;
+        #region Storage
 
-        private string DefaultStorage
+        private string DefaultStorage()
         {
-            get
-            {
-                var machineName = Environment.MachineName ?? Dns.GetHostName() ?? Environment.GetEnvironmentVariable("COMPUTERNAME");
-                var fingerPrint = PcFingerPrint.Value();
-                var defaultStorageFolder = Path.Combine(AppContext.BaseDirectory, @$"{machineName} ({fingerPrint})");
-                return defaultStorageFolder;
-            }
+            var machineName = Environment.MachineName ?? Dns.GetHostName() ?? Environment.GetEnvironmentVariable("COMPUTERNAME");
+            var fingerPrint = PcFingerPrint.Value();
+            var defaultStorageFolder = System.IO.Path.Combine(AppContext.BaseDirectory, @$"{machineName} ({fingerPrint})");
+            return defaultStorageFolder;
+
         }
 
         private string _storage = String.Empty;
@@ -82,7 +85,7 @@ namespace Backres.Models
         {
             get
             {
-                return String.IsNullOrWhiteSpace(_storage) ? DefaultStorage : _storage;
+                return String.IsNullOrWhiteSpace(_storage) ? DefaultStorage() : _storage;
             }
             set
             {
@@ -90,152 +93,209 @@ namespace Backres.Models
             }
         }
 
-        private Dictionary<string, string> _actions;
+        private string CommonItemsFolder = System.IO.Path.Combine(AppContext.BaseDirectory, @"Items");
 
-        public Dictionary<string, string> Actions
+        private string StorageItemsFolder
         {
             get
             {
-                if (_actions is null)
-                {
-                    _actions = new Dictionary<string, string>();
-                }
-
-                var folderPath = Path.Combine(AppContext.BaseDirectory, @"Actions");
-
-                if (!System.IO.Directory.Exists(folderPath))
-                {
-                    System.IO.Directory.CreateDirectory(folderPath);
-                }
-
-                if (System.IO.Directory.GetFiles(folderPath).Where(path => System.IO.Path.GetExtension(path) == "json").Count() == 0)
-                {
-                    var assembly = Assembly.GetExecutingAssembly();
-
-                    var regexTemplate = @"Backres\.Actions\.(?<name>.*)\.json";
-
-                    var items = assembly.GetManifestResourceNames()
-                        .Where(str => Regex.IsMatch(str, regexTemplate))
-                        .Select(str => Regex.Match(str, regexTemplate).Groups["name"].Value);
-
-                    var writerOptions = new JsonWriterOptions
-                    {
-                        Indented = true
-                    };
-
-                    var documentOptions = new JsonDocumentOptions
-                    {
-                        CommentHandling = JsonCommentHandling.Skip
-                    };
-
-                    foreach (var item in items)
-                    {
-                        var content = ReadResource(@$"Backres.Actions.{item}.json");
-                        try
-                        {
-                            string filePath = System.IO.Path.Combine(folderPath, $@"{item}.json");
-                            System.IO.FileInfo file = new System.IO.FileInfo(filePath);
-                            using FileStream fs = File.Create(filePath);
-                            using var writer = new Utf8JsonWriter(fs, options: writerOptions);
-                            using JsonDocument document = JsonDocument.Parse(content, documentOptions);
-                            document.WriteTo(writer);
-                            writer.Flush();
-                        }
-                        catch
-                        {
-                        }
-
-                    }
-                }
-
-                var files = System.IO.Directory.GetFiles(folderPath).Where(path => System.IO.Path.GetExtension(path) == ".json");
-                
-                foreach(var file in files)
-                {
-                    var name = System.IO.Path.GetFileNameWithoutExtension(file);
-                    var content = System.IO.File.ReadAllText(file);
-                    JsonDocument.Parse(content);
-                    _actions.Add(name, content);
-                }
-
-
-                return _actions;
+                return System.IO.Path.Combine(Storage, @"_Items");
             }
         }
 
         #endregion
 
-        #region Load
+        #region Items
 
-        private void LoadActions(string folderPath)
+        public ObservableDictionary<string, BackresItem> Items;
+
+        private void LoadItems(bool forceCreate = true)
         {
 
-        }
-
-        private void Load(bool forceCreate = true)
-        {
-
-            var filePath = Path.Combine(Storage, @"backres.json");
-
-            if (!File.Exists(filePath))
+            if (!System.IO.Directory.Exists(StorageItemsFolder))
             {
                 if (forceCreate)
                 {
-                    string jsonString = Create();
-
-                    var writerOptions = new JsonWriterOptions
-                    {
-                        Indented = true
-                    };
-
-                    var documentOptions = new JsonDocumentOptions
-                    {
-                        CommentHandling = JsonCommentHandling.Skip
-                    };
-
-                    System.IO.FileInfo file = new System.IO.FileInfo(filePath);
-                    file.Directory!.Create();
-
-                    using FileStream fs = File.Create(filePath);
-                    using var writer = new Utf8JsonWriter(fs, options: writerOptions);
-                    using JsonDocument document = JsonDocument.Parse(jsonString, documentOptions);
-                    document.WriteTo(writer);
-                    writer.Flush();
+                    Directory.CreateDirectory(StorageItemsFolder);
                 }
                 else
                 {
-                    throw new Exception("File *.json dosn't exists in the current location.");
+                    throw new Exception("Directory with Items doesn't exest");
                 }
             }
 
-            var options = new JsonSerializerOptions { MaxDepth = 5 };
-            Items = JsonSerializer.Deserialize<List<BackresItem>>(File.ReadAllText(filePath), options)!;
-            var t = Actions;
+            var directoryInfo = new DirectoryInfo(StorageItemsFolder);
+
+            Items = new ObservableDictionary<string, BackresItem>();
+
+            foreach (var file in directoryInfo.GetFiles())
+            {
+                using var stream = file.OpenRead();
+                var item = JsonSerializer.Deserialize<BackresItem>(stream);
+                if (Items.ContainsKey(item.Name))
+                {
+                    Trace.WriteLine(@$"Item with Name(key) ""{item.Name}"" already exist in collection.");
+                }
+                else
+                {
+                    Items.Add(item.Name, item);
+                }
+            }
         }
 
-        private string Create()
+        public void SaveItems()
         {
-            System.Text.Json.JsonDocumentOptions options = default;
-
-            var json = JsonNode.Parse(@"[]");
-
-            var array = json.Root.AsArray();
-
-            foreach (var item in Actions)
+            foreach (var item in Items)
             {
-                var node = JsonNode.Parse(item.Value);
-                array.Add(node);
+                var filePath = @$"{StorageItemsFolder}\{item.Value.Name}.json";
+                using var file = System.IO.File.Create(filePath);
+                //using var stream = file.OpenRead();
+                var jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
+                JsonSerializer.Serialize(file, item.Value, jsonSerializerOptions);
+            }
+        }
+
+        //public void AddItems(List<BackresItem> items)
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        try
+        //        {
+        //            Items.Add(item.Name, item);
+        //        }
+        //        catch (ArgumentException ex)
+        //        {
+        //            if (ex.Message == "The dictionary already contains the key")
+        //            {
+
+        //            }
+        //        }
+        //    }
+        //}
+
+        public void AddItems(ObservableDictionary<string, BackresItem> items)
+        {
+            foreach (var item in items)
+            {
+                if (Items.ContainsKey(item.Key))
+                {
+                    Trace.WriteLine(@$"Item with Name(key) ""{item.Key}"" already exist in collection.");
+                }
+                else
+                {
+                    Items.Add(item.Key, item.Value);
+                }
+            }
+        }
+
+        public void DeleteItem(ObservableKeyValuePair<string, BackresItem> item)
+        {
+            DeleteItem(item.Value);
+        }
+
+        public void DeleteItem(BackresItem item)
+        {
+            Items.Remove(item.Name);
+        }
+
+        public void DeleteItems(List<BackresItem> items)
+        {
+            foreach (var item in items)
+            {
+                DeleteItem(item);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region CommonItems
+
+        private ObservableDictionary<string, BackresItem> _commonItems = new ObservableDictionary<string, BackresItem>();
+
+        public ObservableDictionary<string, BackresItem> CommonItems
+        {
+            get
+            {
+                return _commonItems;
+            }
+        }
+
+        private void LoadCommonItems()
+        {
+
+            if (!System.IO.Directory.Exists(CommonItemsFolder))
+            {
+                System.IO.Directory.CreateDirectory(CommonItemsFolder);
             }
 
-            return json.ToString();
-        }
+            #region Fill common items folder
+            // check content of common items folder and if folder empty read items form resources 
+            if (System.IO.Directory.GetFiles(CommonItemsFolder).Where(path => System.IO.Path.GetExtension(path) == "json").Count() == 0)
+            {
+                var assembly = Assembly.GetExecutingAssembly();
 
-        private JsonDocument AddItem(JsonDocument jsonDocument, string value)
-        {
+                var regexTemplate = @"Backres\.Actions\.(?<name>.*)\.json";
 
-            //var jsd = JsonSerializer.Deserialize<List<BackresItem>>(File.ReadAllText(filePath), options);
+                var items = assembly.GetManifestResourceNames()
+                    .Where(str => Regex.IsMatch(str, regexTemplate))
+                    .Select(str => Regex.Match(str, regexTemplate).Groups["name"].Value);
 
-            return jsonDocument;
+                var writerOptions = new JsonWriterOptions
+                {
+                    Indented = true
+                };
+
+                var documentOptions = new JsonDocumentOptions
+                {
+                    CommentHandling = JsonCommentHandling.Skip
+                };
+
+                foreach (var item in items)
+                {
+                    var content = ReadResource(@$"Backres.Actions.{item}.json");
+                    try
+                    {
+                        string filePath = System.IO.Path.Combine(CommonItemsFolder, $@"{item}.json");
+                        System.IO.FileInfo file = new System.IO.FileInfo(filePath);
+                        using FileStream fs = File.Create(filePath);
+                        using var writer = new Utf8JsonWriter(fs, options: writerOptions);
+                        using JsonDocument document = JsonDocument.Parse(content, documentOptions);
+                        document.WriteTo(writer);
+                        writer.Flush();
+                    }
+                    catch
+                    {
+                    }
+
+                }
+            }
+            #endregion
+
+            if (_commonItems is null)
+            {
+                _commonItems = new ObservableDictionary<string, BackresItem>();
+            }
+
+            _commonItems.Clear();
+
+            var files = System.IO.Directory.GetFiles(CommonItemsFolder).Where(path => System.IO.Path.GetExtension(path) == ".json");
+
+            foreach (var file in files)
+            {
+                var content = System.IO.File.ReadAllText(file);
+                var item = JsonSerializer.Deserialize<BackresItem>(content);
+                if (_commonItems.ContainsKey(item.Name))
+                {
+                    Trace.WriteLine(@$"Item with name(key) ""{item.Name}"" already exist.");
+                }
+                else
+                {
+                    _commonItems.Add(item.Name, item);
+                }
+            }
+
         }
 
         #endregion
@@ -250,7 +310,7 @@ namespace Backres.Models
             {
                 try
                 {
-                    BackresItem Item = Items.FirstOrDefault(item => item.Name == name);
+                    BackresItem Item = Items[name];
                     var ActionItems = aDirection == ActionDirection.Backup ? Item.BackupActions.OrderBy(i => i.Order) : Item.RestoreActions.OrderBy(i => i.Order);
                     foreach (var action in ActionItems)
                     {
